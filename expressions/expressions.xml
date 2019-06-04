@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<root>
+    <expression>
+        <add>
+            <number>1</number>
+            <multiply>
+            <number>2</number>
+            <number>8</number>
+            </multiply>
+        </add>
+    </expression>
+    <expression>
+        <minus>
+            <divide>
+                <number>1</number>
+                <number>2</number>
+            </divide>
+            <number>8</number>
+        </minus>
+    </expression>
+</root>
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<root>
+    <expression>
+        <add>
+            <add>
+                <number>1</number>
+                <number>2</number>
+            </add>
+            <multiply>
+                <number>2</number>
+                <number>3</number>
+            </multiply>
+            <add>
+                <number>4</number>
+                <number>5</number>
+            </add>
+            <number>3</number>
+            <multiply>
+                <number>1</number>
+                <add>
+                    <number>3</number>
+                    <number>4</number>
+                </add>
+            </multiply>
+        </add>
+    </expression>
+</root>
+
+<root>
+    <divide>
+        <number>24</number>
+        <number>3</number>
+        <add>
+            <number>2</number>
+            <number>2</number>
+        </add>
+    </divide>
+</root>
+
+<?xml version="1.0"?>
+<data>
+    <country name="Liechtenstein">
+        <rank>1</rank>
+        <neighbor name="Austria" direction="E"/>
+        <year>2008</year>
+        <gdppc>141100</gdppc>
+        <neighbor name="Switzerland" direction="W"/>
+    </country>
+    <country name="Singapore">
+        <rank>4</rank>
+        <year>2011</year>
+        <gdppc>59900</gdppc>
+        <neighbor name="Malaysia" direction="N"/>
+    </country>
+    <country name="Panama">
+        <rank>68</rank>
+        <year>2011</year>
+        <gdppc>13600</gdppc>
+        <neighbor name="Costa Rica" direction="W"/>
+        <neighbor name="Colombia" direction="E"/>
+    </country>
+</data>
