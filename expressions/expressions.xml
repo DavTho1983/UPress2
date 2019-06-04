@@ -51,14 +51,14 @@
 </root>
 
 <root>
-    <divide>
+    <minus>
         <number>24</number>
         <number>3</number>
         <add>
-            <number>2</number>
-            <number>2</number>
+            <number>3</number>
+            <number>7</number>
         </add>
-    </divide>
+    </minus>
 </root>
 
 <?xml version="1.0"?>

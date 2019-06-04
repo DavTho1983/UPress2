@@ -39,12 +39,17 @@ class ExpressionAPIView(APIView):
                             x = x / to_divide[i]
                         return x
 
-
-
-
-
-
                     numbers.append(divide_list(to_divide))
+                elif child.tag == "minus":
+                    to_subtract = addleafnodes(child)
+
+                    def minus_list(to_subtract):
+                        x = to_subtract[0]
+                        for i in range(1, len(to_subtract)):
+                            x = x - to_subtract[i]
+                        return x
+
+                    numbers.append(minus_list(to_subtract))
 
 
 
@@ -55,18 +60,6 @@ class ExpressionAPIView(APIView):
 
         newresults = addleafnodes(root)
         print("[NEW RESULTS]", newresults)
-
-        # for sum in root.iter(tag=None):
-        #     print(sum.tag, sum.attrib, sum.text)
-        #
-        # leaf_text = root.findall('.//number')
-        # leaf_parent_tag = root.find('.//number/..')
-        #
-        # for x in range(0, len(leaf_text)):
-        #     print(leaf_text[x].text, leaf_text[x].tag)
-        #
-        # for x in range(0, len(leaf_parent_tag)):
-        #     print(leaf_parent_tag[x])
         return Response({'data': request.data})
 
 
