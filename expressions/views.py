@@ -1,7 +1,6 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import numpy as np
 
 from lxml import etree
 
@@ -14,87 +13,74 @@ class ExpressionAPIView(APIView):
     queryset = Expression.objects.all()
     serializer_class = ExpressionSerializer
 
+    def __init__(self):
+        self.operator_mapping = {
+            "add": " + ",
+            "minus": " - ",
+            "divide": " / ",
+            "multiply": " * "
+        }
+
+
     def get(self, request):
         return Response({'data': request.data})
 
     def post(self, request):
         root = etree.XML(request.data['expression'])
 
-        def evaluate_expression(root):
-            numbers = []
-            for child in root:
+
+        result = self.evaluate_expression(root)[0]
+        print("[NEW RESULT]", result)
+
+        exp_parsed = self.expression_to_string(root) + f" = {result}"
+        print("[EXPRESSION PARSED]", exp_parsed)
+        return Response({'data': request.data})
+
+    def expression_to_string(self, root):
+        expression = ""
+
+        for child in root:
+            if child.tag != "root" and child.tag != "expression":
                 if child.tag == "number":
                     num = int(child.text)
-                    numbers.append(num)
-
-                elif child.tag == "add":
-                    _ = evaluate_expression(child)
-                    numbers.append(np.sum(_))
-
-                elif child.tag == "multiply":
-                    _ = evaluate_expression(child)
-                    numbers.append(np.prod(_))
-
-                elif child.tag == "divide":
-                    _ = evaluate_expression(child)
-
-                    def divide_list(_):
-                        x = _[0]
-                        for i in range(1, len(_)):
-                            x = x / _[i]
-                        return x
-
-                    numbers.append(divide_list(_))
-
-                elif child.tag == "minus":
-                    _ = evaluate_expression(child)
-
-                    def minus_list(_):
-                        x = _[0]
-                        for i in range(1, len(_)):
-                            x = x - _[i]
-                        return x
-
-                    numbers.append(minus_list(_))
-
-                else:
-                    numbers.extend(evaluate_expression(child))
-
-            return numbers
-
-        newresults = evaluate_expression(root)
-        print("[NEW RESULTS]", newresults)
-
-        def expression_to_string(root):
-            expression = ""
-            operator_mapping = {
-                "add": " + ",
-                "minus": " - ",
-                "divide": " / ",
-                "multiply": " * "
-            }
-            for child in root:
-                if child.tag != "root" and child.tag != "expression":
-                    if child.tag == "number":
-                        num = int(child.text)
-                        if child != root[-1]:
-                            expression += f"{num} {operator_mapping[root.tag]} "
-                        else:
-                            expression += f"{num}"
-
+                    if child != root[-1]:
+                        expression += f"{num} {self.operator_mapping[root.tag]} "
                     else:
-                        if child != root[-1]:
-                            expression += f"({expression_to_string(child)}) {operator_mapping[root.tag]} "
-                        else:
-                            expression += f"({expression_to_string(child)})"
+                        expression += f"{num}"
+
                 else:
-                    expression += f"{expression_to_string(child)}"
+                    if child != root[-1]:
+                        expression += f"({self.expression_to_string(child)}) {self.operator_mapping[root.tag]} "
+                    else:
+                        expression += f"({self.expression_to_string(child)})"
+            else:
+                expression += f"{self.expression_to_string(child)}"
 
-            return expression
+        return expression
 
-        newresults = expression_to_string(root)
-        print("[NEW RESULTS]", newresults)
-        return Response({'data': request.data})
+    def evaluate_expression(self, root):
+        numbers = []
+        for child in root:
+            if child.tag == "number":
+                num = int(child.text)
+                numbers.append(num)
+
+            elif child.tag in ["add", "minus", "divide", "multiply"]:
+                _ = self.evaluate_expression(child)
+
+                def eval_sublist(_, operator):
+                    x = _[0]
+                    for i in range(1, len(_)):
+                        x_str = f"{x}{operator}{_[i]}"
+                        x = eval(x_str)
+                    return x
+
+                numbers.append(eval_sublist(_, self.operator_mapping[child.tag]))
+
+            else:
+                numbers.extend(self.evaluate_expression(child))
+
+        return numbers
 
 
 class ExpressionAPIListView(generics.ListAPIView):
