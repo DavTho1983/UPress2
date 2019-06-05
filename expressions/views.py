@@ -24,44 +24,55 @@ class ExpressionAPIView(APIView):
         def addleafnodes(root):
             numbers = []
             expression = ""
-            open_brckt = "("
-            close_brckt = ")"
             for child in root:
                 if child.tag == "number":
                     numbers.append(int(child.text))
                 elif child.tag == "add":
-                    _ = np.sum(addleafnodes(child))
-                    numbers.append(_)
-                    _a = (" + ".join(_))
-                    expression += f"{open_brckt}{_a}{close_brckt}"
+                    _ = addleafnodes(child)
+                    numbers.append(np.sum(_))
+                    operator = " + "
+                    _a = (operator.join(str(i) for i in _))
+                    expression += f"({_a})"
+
                 elif child.tag == "multiply":
-                    numbers.append(np.prod(addleafnodes(child)))
+                    _ = addleafnodes(child)
+                    numbers.append(np.prod(_))
+                    operator = " * "
+                    _a = (operator.join(str(i) for i in _))
+                    expression += f"({_a})"
+
                 elif child.tag == "divide":
-                    to_divide = addleafnodes(child)
+                    _ = addleafnodes(child)
 
-                    def divide_list(to_divide):
-                        x = to_divide[0]
-                        for i in range(1, len(to_divide)):
-                            x = x / to_divide[i]
+                    def divide_list(_):
+                        x = _[0]
+                        for i in range(1, len(_)):
+                            x = x / _[i]
                         return x
 
-                    numbers.append(divide_list(to_divide))
+                    numbers.append(divide_list(_))
+                    operator = " / "
+                    _a = (operator.join(str(i) for i in _))
+                    expression += f"({_a})"
+
                 elif child.tag == "minus":
-                    to_subtract = addleafnodes(child)
+                    _ = addleafnodes(child)
 
-                    def minus_list(to_subtract):
-                        x = to_subtract[0]
-                        for i in range(1, len(to_subtract)):
-                            x = x - to_subtract[i]
+                    def minus_list(_):
+                        x = _[0]
+                        for i in range(1, len(_)):
+                            x = x - _[i]
                         return x
 
-                    numbers.append(minus_list(to_subtract))
-
-
+                    numbers.append(minus_list(_))
+                    operator = " - "
+                    _a = (operator.join(str(i) for i in _))
+                    expression += f"({_a})"
 
                 else:
                     numbers.extend(addleafnodes(child))
-                print("NUMBERS: ", numbers)
+
+            print(expression)
             return numbers
 
         newresults = addleafnodes(root)
