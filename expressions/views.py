@@ -23,11 +23,17 @@ class ExpressionAPIView(APIView):
 
         def addleafnodes(root):
             numbers = []
+            expression = ""
+            open_brckt = "("
+            close_brckt = ")"
             for child in root:
                 if child.tag == "number":
                     numbers.append(int(child.text))
                 elif child.tag == "add":
-                    numbers.append(np.sum(addleafnodes(child)))
+                    _ = np.sum(addleafnodes(child))
+                    numbers.append(_)
+                    _a = (" + ".join(_))
+                    expression += f"{open_brckt}{_a}{close_brckt}"
                 elif child.tag == "multiply":
                     numbers.append(np.prod(addleafnodes(child)))
                 elif child.tag == "divide":
