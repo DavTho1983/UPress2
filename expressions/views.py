@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import numpy as np
 
-# from xml.etree import ElementTree
 from lxml import etree
 
 from .serialisers import ExpressionSerializer
@@ -21,28 +20,23 @@ class ExpressionAPIView(APIView):
     def post(self, request):
         root = etree.XML(request.data['expression'])
 
-        def addleafnodes(root):
+        def evaluate_expression(root):
             numbers = []
-            expression = ""
             for child in root:
                 if child.tag == "number":
-                    numbers.append(int(child.text))
+                    num = int(child.text)
+                    numbers.append(num)
+
                 elif child.tag == "add":
-                    _ = addleafnodes(child)
+                    _ = evaluate_expression(child)
                     numbers.append(np.sum(_))
-                    operator = " + "
-                    _a = (operator.join(str(i) for i in _))
-                    expression += f"({_a})"
 
                 elif child.tag == "multiply":
-                    _ = addleafnodes(child)
+                    _ = evaluate_expression(child)
                     numbers.append(np.prod(_))
-                    operator = " * "
-                    _a = (operator.join(str(i) for i in _))
-                    expression += f"({_a})"
 
                 elif child.tag == "divide":
-                    _ = addleafnodes(child)
+                    _ = evaluate_expression(child)
 
                     def divide_list(_):
                         x = _[0]
@@ -51,12 +45,9 @@ class ExpressionAPIView(APIView):
                         return x
 
                     numbers.append(divide_list(_))
-                    operator = " / "
-                    _a = (operator.join(str(i) for i in _))
-                    expression += f"({_a})"
 
                 elif child.tag == "minus":
-                    _ = addleafnodes(child)
+                    _ = evaluate_expression(child)
 
                     def minus_list(_):
                         x = _[0]
@@ -65,17 +56,43 @@ class ExpressionAPIView(APIView):
                         return x
 
                     numbers.append(minus_list(_))
-                    operator = " - "
-                    _a = (operator.join(str(i) for i in _))
-                    expression += f"({_a})"
 
                 else:
-                    numbers.extend(addleafnodes(child))
+                    numbers.extend(evaluate_expression(child))
 
-            print(expression)
             return numbers
 
-        newresults = addleafnodes(root)
+        newresults = evaluate_expression(root)
+        print("[NEW RESULTS]", newresults)
+
+        def expression_to_string(root):
+            expression = ""
+            operator_mapping = {
+                "add": " + ",
+                "minus": " - ",
+                "divide": " / ",
+                "multiply": " * "
+            }
+            for child in root:
+                if child.tag != "root" and child.tag != "expression":
+                    if child.tag == "number":
+                        num = int(child.text)
+                        if child != root[-1]:
+                            expression += f"{num} {operator_mapping[root.tag]} "
+                        else:
+                            expression += f"{num}"
+
+                    else:
+                        if child != root[-1]:
+                            expression += f"({expression_to_string(child)}) {operator_mapping[root.tag]} "
+                        else:
+                            expression += f"({expression_to_string(child)})"
+                else:
+                    expression += f"{expression_to_string(child)}"
+
+            return expression
+
+        newresults = expression_to_string(root)
         print("[NEW RESULTS]", newresults)
         return Response({'data': request.data})
 
