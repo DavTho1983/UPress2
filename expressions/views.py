@@ -10,8 +10,6 @@ from .models import Expression
 
 class ExpressionAPIView(APIView):
 
-
-
     def __init__(self):
         self.operator_mapping = {
             "add": " + ",
@@ -43,6 +41,7 @@ class ExpressionAPIView(APIView):
         serializer.save()
 
         return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
 
     def expression_to_string(self, root):
         expression = ""
@@ -96,6 +95,9 @@ class ExpressionAPIListView(generics.ListAPIView):
     serializer_class = ExpressionSerializer
 
 
-class ExpressionsAPIID(generics.RetrieveAPIView):
+class ExpressionsAPIID(generics.RetrieveUpdateDestroyAPIView):
     queryset = Expression.objects.all()
     serializer_class = ExpressionSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)

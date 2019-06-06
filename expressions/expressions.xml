@@ -51,14 +51,16 @@
 </root>
 
 <root>
-    <minus>
-        <number>24</number>
-        <number>3</number>
-        <add>
+    <expression>
+        <minus>
+            <number>24</number>
             <number>3</number>
-            <number>7</number>
-        </add>
-    </minus>
+            <add>
+                <number>3</number>
+                <number>7</number>
+            </add>
+        </minus>
+    </expression>
 </root>
 
 <?xml version="1.0"?>
