@@ -10,15 +10,6 @@
             </multiply>
         </add>
     </expression>
-    <expression>
-        <minus>
-            <divide>
-                <number>1</number>
-                <number>2</number>
-            </divide>
-            <number>8</number>
-        </minus>
-    </expression>
 </root>
 
 <?xml version="1.0" encoding="UTF-8" ?>

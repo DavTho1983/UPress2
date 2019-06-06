@@ -5,14 +5,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('expressions', '0003_auto_20190606_1541'),
-    ]
+    dependencies = [("expressions", "0003_auto_20190606_1541")]
 
-    operations = [
-        migrations.AlterField(
-            model_name='expression',
-            name='expression',
-            field=models.TextField(),
-        ),
-    ]
+    operations = [migrations.AlterField(model_name="expression", name="expression", field=models.TextField())]

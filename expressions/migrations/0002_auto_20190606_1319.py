@@ -5,14 +5,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('expressions', '0001_initial'),
-    ]
+    dependencies = [("expressions", "0001_initial")]
 
     operations = [
-        migrations.AlterField(
-            model_name='expression',
-            name='expression',
-            field=models.CharField(max_length=255),
-        ),
+        migrations.AlterField(model_name="expression", name="expression", field=models.CharField(max_length=255))
     ]
