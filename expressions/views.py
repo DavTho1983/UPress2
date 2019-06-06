@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,8 +10,7 @@ from .models import Expression
 
 class ExpressionAPIView(APIView):
 
-    queryset = Expression.objects.all()
-    serializer_class = ExpressionSerializer
+
 
     def __init__(self):
         self.operator_mapping = {
@@ -20,6 +19,8 @@ class ExpressionAPIView(APIView):
             "divide": " / ",
             "multiply": " * "
         }
+        self.queryset = Expression.objects.all()
+        self.serializer_class = ExpressionSerializer
 
 
     def get(self, request):
@@ -28,13 +29,20 @@ class ExpressionAPIView(APIView):
     def post(self, request):
         root = etree.XML(request.data['expression'])
 
-
         result = self.evaluate_expression(root)[0]
-        print("[NEW RESULT]", result)
 
         exp_parsed = self.expression_to_string(root) + f" = {result}"
-        print("[EXPRESSION PARSED]", exp_parsed)
-        return Response({'data': request.data})
+
+        serializer_data = {'expression': exp_parsed, 'result': result}
+
+        serializer = self.serializer_class(
+            data=serializer_data,
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
     def expression_to_string(self, root):
         expression = ""
