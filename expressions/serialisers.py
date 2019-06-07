@@ -11,15 +11,16 @@ class ExpressionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expression
         fields = ["expression", "result"]
+        read_only_fields = ["result"]
 
     def create(self, validated_data):
 
-        expression_obj = Expression.objects.create(**validated_data)
+        expression_obj = Expression.objects.create(**validated_data, result=self.initial_data["result"])
 
         return expression_obj
 
     def update(self, instance, validated_data):
         instance.expression = validated_data.get("expression", instance.expression)
-        instance.result = validated_data.get("result", instance.result)
+        instance.result = self.context.get("result", instance.result)
         instance.save()
         return instance
